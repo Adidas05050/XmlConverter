@@ -3,7 +3,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Xsl;
 
 namespace XmlTransformer
@@ -58,11 +60,11 @@ namespace XmlTransformer
                 // Выполняем XSLT преобразование
                 string outputFilePath = Path.Combine(
                     Path.GetDirectoryName(xmlFilePath),
-                    $"{Path.GetFileNameWithoutExtension(xmlFilePath)}_transformed.xml"
+                    $"Employees.xml"
                 );
 
                 PerformXsltTransformation(xmlFilePath, xslFilePath, outputFilePath);
-
+                AddAllAmount(xmlFilePath);
                 StatusText.Text = $"✅ Преобразование выполнено! Результат: {Path.GetFileName(outputFilePath)}";
             }
             catch (Exception ex)
@@ -84,6 +86,7 @@ namespace XmlTransformer
                 {
                     xslt.Transform(xmlPath, writer);
                 }
+                AddAmountForEmployee(outputPath);
             }
             catch (XmlException ex)
             {
@@ -93,6 +96,46 @@ namespace XmlTransformer
             {
                 throw new Exception($"Ошибка при преобразовании: {ex.Message}");
             }
+        }
+
+        private void AddAllAmount(string xmlPath)
+        {
+            try
+            {
+                var xml = XDocument.Load(xmlPath);
+                var root = xml.Root;
+                SummaryAmount(root, "item");
+                root.Save(xmlPath);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка : {ex.Message}");
+            }
+        }
+
+        private void AddAmountForEmployee(string xmlPath)
+        {
+            try
+            {
+                var xml = XDocument.Load(xmlPath);
+                var root = xml.Root;
+                foreach (var employee in root.Elements("Employee"))
+                    SummaryAmount(employee, "salary");
+                root.Save(xmlPath);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка : {ex.Message}");
+            }
+        }
+
+        private void SummaryAmount(XElement item, string elementName)
+        {
+            var result = 0.0;
+            foreach (var attr in item.Elements(elementName).Attributes("amount"))
+                result += Math.Round(float.Parse(attr.Value.Replace('.', ',')), 2);
+            item.Attribute("amount")?.Remove();
+            item.Add(new XAttribute("amount", result));
         }
     }
 }
