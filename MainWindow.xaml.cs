@@ -167,7 +167,7 @@ namespace XmlTransformer
                             "January", "February", "March", "April", "May", "June",
                             "July", "August", "September", "October", "November", "December"
                         };
-                    monthNames = monthNames.Select(e=>e.ToLower()).ToList();
+                    monthNames = monthNames.Select(e => e.ToLower()).ToList();
 
                     foreach (var salaryItem in empElement.Elements("salary"))
                     {
@@ -178,7 +178,7 @@ namespace XmlTransformer
                         var amount = Math.Round(float.Parse(salaryItem.Attribute("amount").Value.ToString().Replace('.', ',')), 2);
                         employee.AddMonthSum(monthIndex, amount);
                     }
-                   
+
                     employees.Add(employee);
                 }
             }
