@@ -59,6 +59,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Additional\EmployeeData.cs" />
+    <Compile Include="Additional\EmployeeParser.cs" />
+    <Compile Include="Additional\RecordModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
